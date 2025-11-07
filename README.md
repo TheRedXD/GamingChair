@@ -10,6 +10,23 @@ that to work well.
 
 Anything else should theoretically work just fine.
 
+⚠️ **IMPORTANT:** If you plan on contributing, run the "Reset active project" gradle task in 
+`Tasks/stonecutter/Reset active project` BEFORE committing any code via git. This is important such that the commit 
+doesn't get polluted with changes like this:
+```diff
+void example() {
+    //? if >=1.21 {
+-   System.out.println("Hello Trails and Tails update!"); 
+-   //?} else {
+-   /*System.out.println("Hello Tricky Trials!");
+-    *///?}
++   /*System.out.println("Hello Trails and Tails update!"); 
++   *///?} else {
++   System.out.println("Hello Tricky Trials!");
++    //?}
+}
+```
+
 ## Features
 > Warning, may not be fully up-to-date!
 

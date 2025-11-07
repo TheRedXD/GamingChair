@@ -32,7 +32,6 @@ public class GamingchairClient implements ClientModInitializer {
         Mod.setState("gc.position", true);
         Mod.setState("gc.boatvelocity", false);
         Mod.setState("gc.uwuifier", false);
-        System.out.println("amogus");
 
         HudElementRegistry.addLast(Identifier.of("sh.thered.gamingchair"), (context, tickCounter) -> {
             Hud.cycle(context, tickCounter.getDynamicDeltaTicks());
