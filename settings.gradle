@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            name = "KikuGie Snapshots"
+            url = "https://maven.kikugie.dev/snapshots"
+        }
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id("dev.kikugie.stonecutter") version "0.7.10"
+}
+
+stonecutter {
+    kotlinController = false
+    centralScript = "build.gradle"
+
+    create(getRootProject()) {
+        versions "1.21.6", "1.21.10"
+    }
+}

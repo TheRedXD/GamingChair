@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "gamingchair",
+  "version": "${version}",
+  "name": "GamingChair",
+  "description": "A utility mod useful for accomplishing a large set of tasks in Minecraft.",
+  "authors": ["TheRedXD"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "sh.thered.gamingchair.client.GamingchairDataGenerator"
+    ],
+    "client": [
+      "sh.thered.gamingchair.client.GamingchairClient"
+    ],
+    "main": [
+      "sh.thered.gamingchair.Gamingchair"
+    ]
+  },
+  "mixins": [
+    "gamingchair.mixins.json",
+    {
+      "config": "gamingchair.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.2",
+    "fabric": "*",
+    "minecraft": ">=1.21.4"
+  }
+}
