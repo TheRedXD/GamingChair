@@ -7,6 +7,19 @@ import java.util.Map;
 
 public class ModConfig {
     static Map<String, Map<String, Object>> options = new HashMap<>();
+    private boolean state;
+
+    public ModConfig(boolean state) {
+        this.state = state;
+    }
+
+    public boolean getState() {
+        return state;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
+    }
 
     public static void setOption(String modName, String option, Object value) {
         if(!options.containsKey(modName)) {

@@ -12,6 +12,13 @@ import java.util.List;
 
 public class Hud extends Mod {
     static String name = "gc.hud";
+    static String description = "Shows a nice HUD element displaying the version of Gaming Chair.";
+
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getDescription() { return description; }
 
     public List<String> texts = new ArrayList<String>();
     static MinecraftClient mc = MinecraftClient.getInstance();

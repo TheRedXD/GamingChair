@@ -10,6 +10,13 @@ import java.util.List;
 
 public class Position extends Mod {
     static String name = "gc.position";
+    static String description = "A clean, text-only position HUD.";
+
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getDescription() { return description; }
 
     public static List<String> texts;
     static MinecraftClient mc = MinecraftClient.getInstance();

@@ -6,6 +6,15 @@ import java.util.*;
 import java.util.regex.*;
 
 public class Uwuifier extends Mod {
+    static String name = "gc.uwuifier";
+    static String description = "...I think it's quite obvious what this does.";
+
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getDescription() { return description; }
+
     private static final String[] FACES = {
             "(・`ω´・)", ";;w;;", "OwO", "UwU", ">w<", "^w^", "ÚwÚ", "^-^", ":3", "x3"
     };
@@ -124,7 +133,7 @@ public class Uwuifier extends Mod {
     }
 
     public static String chatPass(String inputString) {
-        if (isDisabled("gc.uwuifier")) return inputString;
+        if (isDisabled(name)) return inputString;
         return new Uwuifier().uwuifySentence(inputString);
     }
 }

@@ -13,6 +13,13 @@ import java.util.Collection;
 
 public class BoatVelocity extends Mod {
     static String name = "gc.boatvelocity";
+    static String description = "Displays boat velocity by drawing a line towards the current movement direction of the boat.";
+
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getDescription() { return description; }
 
     static MinecraftClient mc = MinecraftClient.getInstance();
 

@@ -10,6 +10,13 @@ import java.util.List;
 
 public class ActiveMods extends Mod {
     static String name = "gc.activemods";
+    static String description = "Shows all currently active mods.";
+
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getDescription() { return description; }
 
     public static List<String> texts;
     public static List<Integer> textX;

@@ -8,6 +8,13 @@ import java.util.*;
 
 public class Debugger extends Mod {
     static String name = "gc.debugger";
+    static String description = "Intended for development purposes, shows various debug information.";
+
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getDescription() { return description; }
 
     static Map<String, String> debugInfo = new HashMap<>();
     static Map<String, Integer> debugInfoPriority = new HashMap<>();

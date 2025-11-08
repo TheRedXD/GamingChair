@@ -15,6 +15,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sh.thered.gamingchair.client.mods.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,14 +26,16 @@ public class GamingchairClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        Mod.setState("gc.betterboat", true);
-        Mod.setState("gc.blockhighlighter", false);
-        Mod.setState("gc.debugger", false);
-        Mod.setState("gc.hud", true);
-        Mod.setState("gc.activemods", true);
-        Mod.setState("gc.position", true);
-        Mod.setState("gc.boatvelocity", false);
-        Mod.setState("gc.uwuifier", false);
+        Mod.setupMods(List.of(
+            Map.of(new BetterBoat(), new ModConfig(true)),
+            Map.of(new BlockHighlighter(), new ModConfig(false)),
+            Map.of(new Debugger(), new ModConfig(false)),
+            Map.of(new Hud(), new ModConfig(true)),
+            Map.of(new ActiveMods(), new ModConfig(true)),
+            Map.of(new Position(), new ModConfig(true)),
+            Map.of(new BoatVelocity(), new ModConfig(false)),
+            Map.of(new Uwuifier(), new ModConfig(false))
+        ));
 
         HudElementRegistry.addLast(Identifier.of("sh.thered.gamingchair"), (context, tickCounter) -> {
             Hud.cycle(context, tickCounter.getDynamicDeltaTicks());
@@ -84,12 +88,9 @@ public class GamingchairClient implements ClientModInitializer {
                                 return 1;
                             })
                             .suggests((context, builder) -> {
-                                builder.suggest("gc.betterboat", Text.of("Enhances boat control"));
-                                builder.suggest("gc.blockhighlighter", Text.of("Highlights blocks"));
-                                builder.suggest("gc.debugger", Text.of("Debugging information"));
-                                builder.suggest("gc.hud", Text.of("HUD elements"));
-                                builder.suggest("gc.activemods", Text.of("Shows active mods"));
-                                builder.suggest("gc.position", Text.of("Shows coordinates"));
+                                for (String mod : Mod.getStates()) {
+                                    builder.suggest(mod, Text.of(Mod.getMod(mod).getDescription()));
+                                }
                                 return builder.buildFuture();
                             })
                     )

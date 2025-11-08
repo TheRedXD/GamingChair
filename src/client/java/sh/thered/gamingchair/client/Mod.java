@@ -8,6 +8,8 @@ import java.util.*;
 public class Mod {
     static Map<String, Boolean> states = new HashMap<>();
     static Map<String, ModConfig> configs = new HashMap<>();
+    static Map<String, Mod> mods = new HashMap<>();
+
     public static boolean isDisabled(String modName) {
         if(!states.containsKey(modName)) return true;
         boolean state = states.get(modName);
@@ -21,6 +23,7 @@ public class Mod {
     public static void setState(String modName, boolean state) {
         ActiveMods.update();
         states.put(modName, state);
+        configs.get(modName).setState(state);
     }
 
     @Nullable
@@ -70,5 +73,28 @@ public class Mod {
 
     public static void dropConfig(String modName) {
         configs.remove(modName);
+    }
+
+    public String getName() {
+        return "";
+    }
+
+    public String getDescription() {
+        return "No description provided.";
+    }
+
+    public static void setupMods(List<Map<Mod, ModConfig>> entries) {
+        entries.forEach(entry -> {
+            entry.forEach((mod, modConfig) -> {
+                states.put(mod.getName(), modConfig.getState());
+                configs.put(mod.getName(), modConfig);
+                mods.put(mod.getName(), mod);
+            });
+        });
+        ActiveMods.update();
+    }
+
+    public static Mod getMod(String modName) {
+        return mods.get(modName);
     }
 }

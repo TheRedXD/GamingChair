@@ -6,13 +6,17 @@ import net.minecraft.client.MinecraftClient;
 //import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 import java.util.Comparator;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ModMenu {
@@ -40,28 +44,54 @@ public class ModMenu {
 
         @Override
         public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-            if (Mod.isEnabled(buttonModName)) {
-                int rainbowInt = Utils.getRainbowInt();
-                // TODO: make the transparency make sense
-                int transparentRainbowInt = Utils.getRainbowInt() - 0xff000000 | 0x22000000;
+            if (buttonModName.endsWith(".settings")) {
+                if (buttonModName.substring(0, buttonModName.lastIndexOf(".")).equals(ModMenuScreen.settingsForMod) && ModMenuScreen.settingsOpen) {
+                    int rainbowInt = Utils.getRainbowInt();
+                    // TODO: make the transparency make sense
+                    int transparentRainbowInt = Utils.getRainbowInt() - 0xff000000 | 0x22000000;
 
-                // Draw transparent rainbow background
-                context.fill(getX(), getY(), getX() + width, getY() + height, transparentRainbowInt);
+                    // Draw transparent rainbow background
+                    context.fill(getX(), getY(), getX() + width, getY() + height, transparentRainbowInt);
 
-                // Draw rainbow outline
-                context.fill(getX(), getY(), getX() + width, getY() + OUTLINE_THICKNESS, rainbowInt); // Top
-                context.fill(getX(), getY() + height - OUTLINE_THICKNESS, getX() + width, getY() + height, rainbowInt); // Bottom
-                context.fill(getX(), getY(), getX() + OUTLINE_THICKNESS, getY() + height, rainbowInt); // Left
-                context.fill(getX() + width - OUTLINE_THICKNESS, getY(), getX() + width, getY() + height, rainbowInt); // Right
-            } else if (Mod.isDisabled(buttonModName)) {
-                // Draw transparent white background
-                context.fill(getX(), getY(), getX() + width, getY() + height, BG_COLOR);
+                    // Draw rainbow outline
+                    context.fill(getX(), getY(), getX() + width, getY() + OUTLINE_THICKNESS, rainbowInt); // Top
+                    context.fill(getX(), getY() + height - OUTLINE_THICKNESS, getX() + width, getY() + height, rainbowInt); // Bottom
+                    context.fill(getX(), getY(), getX() + OUTLINE_THICKNESS, getY() + height, rainbowInt); // Left
+                    context.fill(getX() + width - OUTLINE_THICKNESS, getY(), getX() + width, getY() + height, rainbowInt); // Right
+                } else {
+                    // Draw transparent white background
+                    context.fill(getX(), getY(), getX() + width, getY() + height, BG_COLOR);
 
-                // Draw white outline
-                context.fill(getX(), getY(), getX() + width, getY() + OUTLINE_THICKNESS, OUTLINE_COLOR); // Top
-                context.fill(getX(), getY() + height - OUTLINE_THICKNESS, getX() + width, getY() + height, OUTLINE_COLOR); // Bottom
-                context.fill(getX(), getY(), getX() + OUTLINE_THICKNESS, getY() + height, OUTLINE_COLOR); // Left
-                context.fill(getX() + width - OUTLINE_THICKNESS, getY(), getX() + width, getY() + height, OUTLINE_COLOR); // Right
+                    // Draw white outline
+                    context.fill(getX(), getY(), getX() + width, getY() + OUTLINE_THICKNESS, OUTLINE_COLOR); // Top
+                    context.fill(getX(), getY() + height - OUTLINE_THICKNESS, getX() + width, getY() + height, OUTLINE_COLOR); // Bottom
+                    context.fill(getX(), getY(), getX() + OUTLINE_THICKNESS, getY() + height, OUTLINE_COLOR); // Left
+                    context.fill(getX() + width - OUTLINE_THICKNESS, getY(), getX() + width, getY() + height, OUTLINE_COLOR); // Right
+                }
+            } else {
+                if (Mod.isEnabled(buttonModName)) {
+                    int rainbowInt = Utils.getRainbowInt();
+                    // TODO: make the transparency make sense
+                    int transparentRainbowInt = Utils.getRainbowInt() - 0xff000000 | 0x22000000;
+
+                    // Draw transparent rainbow background
+                    context.fill(getX(), getY(), getX() + width, getY() + height, transparentRainbowInt);
+
+                    // Draw rainbow outline
+                    context.fill(getX(), getY(), getX() + width, getY() + OUTLINE_THICKNESS, rainbowInt); // Top
+                    context.fill(getX(), getY() + height - OUTLINE_THICKNESS, getX() + width, getY() + height, rainbowInt); // Bottom
+                    context.fill(getX(), getY(), getX() + OUTLINE_THICKNESS, getY() + height, rainbowInt); // Left
+                    context.fill(getX() + width - OUTLINE_THICKNESS, getY(), getX() + width, getY() + height, rainbowInt); // Right
+                } else if (Mod.isDisabled(buttonModName)) {
+                    // Draw transparent white background
+                    context.fill(getX(), getY(), getX() + width, getY() + height, BG_COLOR);
+
+                    // Draw white outline
+                    context.fill(getX(), getY(), getX() + width, getY() + OUTLINE_THICKNESS, OUTLINE_COLOR); // Top
+                    context.fill(getX(), getY() + height - OUTLINE_THICKNESS, getX() + width, getY() + height, OUTLINE_COLOR); // Bottom
+                    context.fill(getX(), getY(), getX() + OUTLINE_THICKNESS, getY() + height, OUTLINE_COLOR); // Left
+                    context.fill(getX() + width - OUTLINE_THICKNESS, getY(), getX() + width, getY() + height, OUTLINE_COLOR); // Right
+                }
             }
 
             // Draw text
@@ -79,6 +109,12 @@ public class ModMenu {
         public ButtonWidget button1;
         public ButtonWidget button2;
 
+        public static String settingsForMod = "";
+        public static boolean settingsOpen = false;
+        public static int settingsWidth = 200;
+        public static int settingsXOffset = settingsWidth;
+        public static double settingsOpenTime = 0;
+
         @Override
         protected void init() {
 //            button1 = ButtonWidget.builder(Text.literal("Button 1"), button -> {
@@ -94,14 +130,34 @@ public class ModMenu {
 //                .tooltip(Tooltip.of(Text.literal("Tooltip of button2")))
 //                .build();
 
-            int yValue = 40;
+            // Mod toggle buttons
+            int startingYValue = 40;
+            int yValue = startingYValue;
             String[] sortedStates = Mod.getStates().stream().sorted(Comparator.naturalOrder()).toArray(String[]::new);
             for (String mod : sortedStates) {
                 ModMenuButton bagel = new ModMenuButton(20, yValue, 100, 16, Text.literal(mod), button -> {
                     Mod.setState(mod, !Mod.isEnabled(mod));
+                    button.setTooltip(Tooltip.of(Text.literal(Mod.getMod(mod).getDescription() + "\n\n§oCurrently " + (Mod.isEnabled(mod) ? "§aenabled" : "§cdisabled") + ".")));
                 }, null, null, mod);
+                bagel.setTooltip(Tooltip.of(Text.literal(Mod.getMod(mod).getDescription() + "\n\n§oCurrently " + (Mod.isEnabled(mod) ? "§aenabled" : "§cdisabled") + ".")));
                 addDrawableChild(bagel);
-                yValue += 2+16;
+                yValue += 2 + 16;
+            }
+            yValue = startingYValue;
+            for (String mod : sortedStates) {
+                ModMenuButton bagel = new ModMenuButton(20 + 100 + 2, yValue, 16, 16, Text.literal(">"), button -> {
+                    if (settingsForMod.equals(mod)) {
+                        settingsOpen = !settingsOpen;
+                    } else {
+                        settingsOpen = true;
+                        modMenuScreen.settingsOpenTime = 0;
+                    }
+                    settingsForMod = mod;
+                    modMenuScreen.settingsXOffset = modMenuScreen.settingsWidth;
+                }, null, null, mod + ".settings");
+                bagel.setTooltip(Tooltip.of(Text.literal("Settings for " + mod)));
+                addDrawableChild(bagel);
+                yValue += 2 + 16;
             }
         }
 
@@ -114,6 +170,20 @@ public class ModMenu {
         ) {
             super.render(context, mouseX, mouseY, delta);
             context.drawText(mc.textRenderer, "Gaming Chair | Mod Menu", 20, 20, 0xffffffff, true);
+
+            // Render settings
+            // FIXME: fix this stupid hack and make it actually stable
+            context.fill(mc.getWindow().getScaledWidth() - settingsWidth + settingsXOffset, 0, mc.getWindow().getScaledWidth() + settingsXOffset, mc.getWindow().getScaledHeight(), 0x80000000);
+            context.fill(mc.getWindow().getScaledWidth() - settingsWidth + settingsXOffset, 0, mc.getWindow().getScaledWidth() + settingsXOffset, 20, 0x80000000);
+            context.drawText(mc.textRenderer, "Settings for §e" + settingsForMod, mc.getWindow().getScaledWidth() - settingsWidth + 10 + settingsXOffset, 6, 0xffffffff, true);
+
+            if (settingsOpen) {
+                settingsXOffset = (int) (settingsWidth * Math.exp(-0.8 * settingsOpenTime));
+                settingsOpenTime = Math.min(settingsOpenTime + delta, 6);
+            } else {
+                settingsXOffset = (int) (settingsWidth * Math.exp(-1.0 * settingsOpenTime));
+                settingsOpenTime = Math.max(settingsOpenTime - delta, 0);
+            }
         }
     }
 
@@ -141,6 +211,10 @@ public class ModMenu {
 
     public static void enable() {
         mc.setScreen(modMenuScreen);
+        modMenuScreen.settingsForMod = "";
+        modMenuScreen.settingsOpen = false;
+        modMenuScreen.settingsOpenTime = 0;
+        modMenuScreen.settingsXOffset = modMenuScreen.settingsWidth;
     }
 
     public static void disable() {
