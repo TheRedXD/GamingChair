@@ -14,8 +14,12 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import sh.thered.gamingchair.client.mods.Bentifier;
+import sh.thered.gamingchair.client.mods.Debugger;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -114,6 +118,7 @@ public class ModMenu {
         public static int settingsWidth = 200;
         public static int settingsXOffset = settingsWidth;
         public static double settingsOpenTime = 0;
+        public static double settingsCloseTime = 0;
 
         @Override
         protected void init() {
@@ -148,17 +153,29 @@ public class ModMenu {
                 ModMenuButton bagel = new ModMenuButton(20 + 100 + 2, yValue, 16, 16, Text.literal(">"), button -> {
                     if (settingsForMod.equals(mod)) {
                         settingsOpen = !settingsOpen;
+                        settingsForMod = mod;
+                        modMenuScreen.settingsXOffset = modMenuScreen.settingsWidth;
                     } else {
-                        settingsOpen = true;
                         modMenuScreen.settingsOpenTime = 0;
+                        modMenuScreen.settingsCloseTime = 0;
+                        settingsForMod = mod;
+                        modMenuScreen.settingsXOffset = modMenuScreen.settingsWidth;
+                        settingsOpen = true;
                     }
-                    settingsForMod = mod;
-                    modMenuScreen.settingsXOffset = modMenuScreen.settingsWidth;
                 }, null, null, mod + ".settings");
                 bagel.setTooltip(Tooltip.of(Text.literal("Settings for " + mod)));
                 addDrawableChild(bagel);
                 yValue += 2 + 16;
             }
+
+            // make a basic button
+//            addDrawableChild(ButtonWidget.builder(Text.literal("Quick Button"), button -> {
+//                Mod.setupMods(List.of(Map.of(new Bentifier(), new ModConfig(false))));
+//            })
+//                .dimensions(20, yValue + 20, 100, 20)
+//                .tooltip(Tooltip.of(Text.literal("This is a quick test button.")))
+//                .build());
+
         }
 
         @Override
@@ -176,14 +193,24 @@ public class ModMenu {
             context.fill(mc.getWindow().getScaledWidth() - settingsWidth + settingsXOffset, 0, mc.getWindow().getScaledWidth() + settingsXOffset, mc.getWindow().getScaledHeight(), 0x80000000);
             context.fill(mc.getWindow().getScaledWidth() - settingsWidth + settingsXOffset, 0, mc.getWindow().getScaledWidth() + settingsXOffset, 20, 0x80000000);
             context.drawText(mc.textRenderer, "Settings for §e" + settingsForMod, mc.getWindow().getScaledWidth() - settingsWidth + 10 + settingsXOffset, 6, 0xffffffff, true);
+            context.drawText(mc.textRenderer, "TODO!", mc.getWindow().getScaledWidth() - settingsWidth + 10 + settingsXOffset, 26, 0xffffffff, true);
 
             if (settingsOpen) {
-                settingsXOffset = (int) (settingsWidth * Math.exp(-0.8 * settingsOpenTime));
                 settingsOpenTime = Math.min(settingsOpenTime + delta, 6);
+                settingsCloseTime = 0;
+                settingsXOffset = Math.max((int) ((settingsWidth+2) * Math.exp(-0.8 * settingsOpenTime)), 1) - 1;
             } else {
-                settingsXOffset = (int) (settingsWidth * Math.exp(-1.0 * settingsOpenTime));
-                settingsOpenTime = Math.max(settingsOpenTime - delta, 0);
+                settingsCloseTime = Math.min(settingsCloseTime + delta, 6);
+                settingsOpenTime = 0;
+                settingsXOffset = Math.max((settingsWidth+2) - (int) ((settingsWidth+2) * Math.exp(-0.8 * settingsCloseTime)), 1) - 1;
             }
+            Debugger.set("settingsXOffset", String.valueOf(settingsXOffset), 0);
+        }
+
+        @Override
+        public void close() {
+            super.close();
+            Mod.exportEnabledMods();
         }
     }
 
@@ -214,11 +241,13 @@ public class ModMenu {
         modMenuScreen.settingsForMod = "";
         modMenuScreen.settingsOpen = false;
         modMenuScreen.settingsOpenTime = 0;
+        modMenuScreen.settingsCloseTime = 6;
         modMenuScreen.settingsXOffset = modMenuScreen.settingsWidth;
     }
 
     public static void disable() {
         mc.setScreen(null);
+        Mod.exportEnabledMods();
     }
 
     public static void toggle() {

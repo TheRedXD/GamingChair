@@ -10,11 +10,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 //? if 1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 //?}
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import sh.thered.gamingchair.client.mods.*;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -34,8 +36,11 @@ public class GamingchairClient implements ClientModInitializer {
             Map.of(new ActiveMods(), new ModConfig(true)),
             Map.of(new Position(), new ModConfig(true)),
             Map.of(new BoatVelocity(), new ModConfig(false)),
-            Map.of(new Uwuifier(), new ModConfig(false))
+            Map.of(new Uwuifier(), new ModConfig(false)),
+            Map.of(new Bentifier(), new ModConfig(false))
         ));
+
+        Mod.pullFromEnabledMods();
 
         HudElementRegistry.addLast(Identifier.of("sh.thered.gamingchair"), (context, tickCounter) -> {
             Hud.cycle(context, tickCounter.getDynamicDeltaTicks());
@@ -50,7 +55,11 @@ public class GamingchairClient implements ClientModInitializer {
         WorldRenderEvents.END_MAIN.register(Identifier.of("sh.thered.gamingchair"), BoatVelocity::cycle);
         //?}
 
-        ClientSendMessageEvents.MODIFY_CHAT.register(Identifier.of("sh.thered.gamingchair"), Uwuifier::chatPass);
+        ClientSendMessageEvents.MODIFY_CHAT.register(Identifier.of("sh.thered.gamingchair"), (message) -> {
+            message = Uwuifier.chatPass(message);
+            message = Bentifier.chatPass(message);
+            return message;
+        });
 
         try {
             new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -82,6 +91,7 @@ public class GamingchairClient implements ClientModInitializer {
                                         Mod.setState(arg, !Boolean.TRUE.equals(Mod.getState(arg)));
                                         source.sendFeedback(Text.literal("§8[§dGamingChair§8] §d" + arg + " toggled §aon§d!"));
                                     }
+                                    Mod.exportEnabledMods();
                                 } else {
                                     source.sendFeedback(Text.literal("§8[§dGamingChair§8] §d" + arg + " is not a defined Gaming Chair mod."));
                                 }
