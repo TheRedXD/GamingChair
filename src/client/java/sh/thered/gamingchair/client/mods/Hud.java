@@ -1,9 +1,12 @@
 package sh.thered.gamingchair.client.mods;
 import net.fabricmc.loader.api.FabricLoader;
+//? if <=1.21.11 {
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
+ //? } else {
+/*import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+*///? }
 import sh.thered.gamingchair.client.Mod;
 import sh.thered.gamingchair.client.Utils;
 
@@ -21,8 +24,16 @@ public class Hud extends Mod {
     public String getDescription() { return description; }
 
     public List<String> texts = new ArrayList<String>();
+    //? if <=1.21.11 {
     static MinecraftClient mc = MinecraftClient.getInstance();
+     //? } else {
+    /*static Minecraft mc = Minecraft.getInstance();
+    *///? }
+    //? if <=1.21.11 {
     public static void cycle(DrawContext drawContext, float v) {
+    //?} else {
+    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
+    *///? }
         if(isDisabled(name)) return;
         // MinecraftClient.getInstance().currentScreen very useful when it comes to detecting if a screen is shown (loading screen and chat, etc.)
         if (!mc.getDebugHud().shouldShowDebugHud() && !mc.options.hudHidden) {

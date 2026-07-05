@@ -3,8 +3,12 @@ package sh.thered.gamingchair.client.mods;
 //? if 1.21.10 {
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 //?}
+//? if <=1.21.11 {
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.WorldRenderer;
+ //? } else {
+/*import net.minecraft.client.Minecraft;
+*///? }
+//import net.minecraft.client.render.WorldRenderer;
 import sh.thered.gamingchair.client.Mod;
 import sh.thered.gamingchair.client.debug.DebugInfo;
 import sh.thered.gamingchair.client.debug.DebugInfoCollectionBuilder;
@@ -21,7 +25,11 @@ public class BoatVelocity extends Mod {
     @Override
     public String getDescription() { return description; }
 
+    //? if <=1.21.11 {
     static MinecraftClient mc = MinecraftClient.getInstance();
+     //? } else {
+    /*static Minecraft mc = Minecraft.getInstance();
+    *///? }
 
     //? if 1.21.10 {
     public static void cycle(WorldRenderContext worldRenderContext) {

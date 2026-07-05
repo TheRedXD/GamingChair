@@ -1,6 +1,7 @@
 package sh.thered.gamingchair.client.mods;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import sh.thered.gamingchair.client.debug.DebugInfo;
 import sh.thered.gamingchair.client.Mod;
 
@@ -21,7 +22,11 @@ public class Debugger extends Mod {
 
     static Map<String, Collection<DebugInfo>> debugInfoCollections = new HashMap<>();
 
+    //? if <=1.21.11 {
     public static void render(DrawContext drawContext, float v) {
+     //?} else {
+    /*public static void render(GuiGraphicsExtractor drawContext, float v) {
+    *///? }
         if(isDisabled(name)) return;
         int padding = 3;
         int x = 10;
@@ -76,7 +81,11 @@ public class Debugger extends Mod {
         debugInfoPriority.remove(key);
     }
 
+    //? if <=1.21.11 {
     public static void cycle(DrawContext drawContext, float v) {
+     //?} else {
+    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
+    *///? }
         if(isDisabled(name)) return;
         if (!Hud.mc.getDebugHud().shouldShowDebugHud() && !Hud.mc.options.hudHidden) {
             render(drawContext, v);

@@ -1,6 +1,10 @@
 package sh.thered.gamingchair.client.mods;
 
+//? if <=1.21.11 {
 import net.minecraft.client.MinecraftClient;
+//? } else {
+/*import net.minecraft.client.Minecraft;
+*///? }
 import sh.thered.gamingchair.client.Mod;
 
 public class BetterBoat extends Mod {
@@ -13,7 +17,11 @@ public class BetterBoat extends Mod {
     @Override
     public String getDescription() { return description; }
 
+    //? if <=1.21.11 {
     static MinecraftClient mc = MinecraftClient.getInstance();
+    //? } else {
+    /*static Minecraft mc = Minecraft.getInstance();
+    *///? }
     public static void cycle() {
         if(isDisabled(name)) return;
 

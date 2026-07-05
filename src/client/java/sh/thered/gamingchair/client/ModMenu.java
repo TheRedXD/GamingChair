@@ -2,6 +2,7 @@ package sh.thered.gamingchair.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+//? if <=1.21.11 {
 import net.minecraft.client.MinecraftClient;
 //import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.DrawContext;
@@ -14,6 +15,11 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+//? } else {
+/*import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.narration.NarrationSupplier;
+import net.minecraft.client.gui.components.Button;
+*///? }
 import sh.thered.gamingchair.client.mods.Bentifier;
 import sh.thered.gamingchair.client.mods.Debugger;
 
@@ -25,10 +31,18 @@ import java.util.function.Supplier;
 
 public class ModMenu {
     public static ModMenuScreen modMenuScreen = new ModMenuScreen();
+    //? if <=1.21.11 {
     static MinecraftClient mc = MinecraftClient.getInstance();
+     //? } else {
+    /*static Minecraft mc = Minecraft.getInstance();
+    *///? }
     static boolean triggerToggle = false;
 
+    //? if <=1.21.11 {
     public static class ModMenuButton extends ButtonWidget {
+    //? } else {
+    /*public static class ModMenuButton extends Button {
+    *///? }
         public static final int OUTLINE_THICKNESS = 1;
         public static final int BG_COLOR = 0x22FFFFFF; // ARGB: semi-transparent white
         public static final int OUTLINE_COLOR = 0xFFFFFFFF; // ARGB: solid white

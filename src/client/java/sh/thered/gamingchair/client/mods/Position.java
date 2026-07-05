@@ -1,6 +1,8 @@
 package sh.thered.gamingchair.client.mods;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.math.MathHelper;
 import sh.thered.gamingchair.client.Mod;
 import sh.thered.gamingchair.client.Utils;
@@ -19,8 +21,16 @@ public class Position extends Mod {
     public String getDescription() { return description; }
 
     public static List<String> texts;
+    //? if <=1.21.11 {
     static MinecraftClient mc = MinecraftClient.getInstance();
+    //? } else {
+    /*static Minecraft mc = Minecraft.getInstance();
+    *///? }
+    //? if <=1.21.11 {
     public static void cycle(DrawContext drawContext, float v) {
+     //?} else {
+    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
+    *///? }
         if (isDisabled(name)) return;
         if (!mc.getDebugHud().shouldShowDebugHud() && !mc.options.hudHidden) {
             int posy = 10;

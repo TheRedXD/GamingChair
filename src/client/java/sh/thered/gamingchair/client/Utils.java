@@ -1,10 +1,19 @@
 package sh.thered.gamingchair.client;
 
+//? if <=1.21.11 {
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.MathHelper;
+//? } else {
+/*import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
+*///? }
 
 public class Utils {
+    //? if <=1.21.11 {
     static MinecraftClient mc = MinecraftClient.getInstance();
+    //? } else {
+    /*static Minecraft mc = Minecraft.getInstance();
+    *///? }
     public static float getYaw() {
         assert mc.player != null;
         float yaw_bonk = ((mc.player.getYaw() + 180) % 360) - 180;

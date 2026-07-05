@@ -1,6 +1,7 @@
 package sh.thered.gamingchair.client.mods;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.math.MathHelper;
 import sh.thered.gamingchair.client.Mod;
 import sh.thered.gamingchair.client.Utils;
@@ -28,7 +29,11 @@ public class ActiveMods extends Mod {
     public static boolean shouldUpdate = true;
 
     static MinecraftClient mc = MinecraftClient.getInstance();
+    //? if <=1.21.11 {
     public static void cycle(DrawContext drawContext, float v) {
+     //?} else {
+    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
+    *///? }
         if(isDisabled(name)) return;
         if (!mc.getDebugHud().shouldShowDebugHud() && !mc.options.hudHidden) {
             int rainbowInt = Utils.getRainbowInt();

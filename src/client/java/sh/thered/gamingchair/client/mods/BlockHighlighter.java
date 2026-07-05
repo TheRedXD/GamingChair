@@ -7,18 +7,21 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.minecraft.client.render.state.OutlineRenderState;
 //?}
+//? if <=1.21.11 {
 import net.minecraft.client.MinecraftClient;
+ //? } else {
+/*import net.minecraft.client.Minecraft;
+*///? }
 //import net.minecraft.client.render.*;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
-import net.minecraft.util.shape.VoxelShape;
-import org.joml.Matrix4f;
-import org.joml.Quaterniond;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.util.hit.BlockHitResult;
+//import net.minecraft.util.hit.HitResult;
+//import net.minecraft.util.math.*;
+//import net.minecraft.util.shape.VoxelShape;
+//import org.joml.Matrix4f;
+//import org.joml.Quaterniond;
+//import org.joml.Quaternionf;
+//import org.joml.Vector3f;
 import sh.thered.gamingchair.client.Mod;
 import sh.thered.gamingchair.client.debug.DebugInfo;
 import sh.thered.gamingchair.client.debug.DebugInfoCollectionBuilder;
@@ -37,7 +40,11 @@ public class BlockHighlighter extends Mod {
     @Override
     public String getDescription() { return description; }
 
+    //? if <=1.21.11 {
     static MinecraftClient mc = MinecraftClient.getInstance();
+     //? } else {
+    /*static Minecraft mc = Minecraft.getInstance();
+    *///? }
 
     //? if 1.21.10 {
     public static boolean cycle(WorldRenderContext context, OutlineRenderState outlineRenderState) {
@@ -161,12 +168,12 @@ public class BlockHighlighter extends Mod {
         return false;
     }
     //?} else {
-    public static boolean cycle() {
+    /*public static boolean cycle() {
         if(isDisabled(name)) {
             Debugger.removeDebugInfoCollection("blockhighlighter");
             return true;
         }
         return false;
     }
-    //?}
+    *///?}
 }
