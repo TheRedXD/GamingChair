@@ -3,14 +3,12 @@ plugins {
     id("maven-publish")
 }
 
-val isObfuscated = stonecutter.current.project.startsWith("1.")
-
 val mod_version: String by project
 val maven_group: String by project
 val archives_base_name: String by project
 val yarn_mappings = project.findProperty("yarn_mappings") as? String
 val loader_version: String by project
-val fabric_version: String by project
+val fabric_api_version: String by project
 // val client_arguments_version: String by project
 
 version = mod_version
@@ -50,14 +48,8 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:${stonecutter.current.project}")
-    if (stonecutter.current.project.startsWith("1.")) {
-        add("mappings", "net.fabricmc:yarn:${yarn_mappings}:v2")
-        add("modImplementation", "net.fabricmc:fabric-loader:${loader_version}")
-        add("modImplementation", "net.fabricmc.fabric-api:fabric-api:${fabric_version}")
-    } else {
-        add("implementation", "net.fabricmc:fabric-loader:${loader_version}")
-        add("implementation", "net.fabricmc.fabric-api:fabric-api:${fabric_version}")
-    }
+    add("implementation", "net.fabricmc:fabric-loader:${loader_version}")
+    add("implementation", "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
     // modImplementation("dev.xpple:clientarguments:${client_arguments_version}")
 }
@@ -79,7 +71,7 @@ tasks.processResources {
     }
 }
 
-val targetJavaVersion = if (isObfuscated) 21 else 25
+val targetJavaVersion = 25
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible) {
@@ -112,12 +104,6 @@ publishing {
     }
 }
 
-if (isObfuscated) {
-    tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
-        destinationDirectory.set(file("${rootProject.projectDir}/builds"))
-    }
-} else {
-    tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
-        destinationDirectory.set(file("${rootProject.projectDir}/builds"))
-    }
+tasks.named<org.gradle.jvm.tasks.Jar>("jar") {
+    destinationDirectory.set(file("${rootProject.projectDir}/builds"))
 }

@@ -1,8 +1,8 @@
 package sh.thered.gamingchair.client.mods;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.Mth;
 import sh.thered.gamingchair.client.Mod;
 import sh.thered.gamingchair.client.Utils;
 
@@ -28,20 +28,16 @@ public class ActiveMods extends Mod {
 
     public static boolean shouldUpdate = true;
 
-    static MinecraftClient mc = MinecraftClient.getInstance();
-    //? if <=1.21.11 {
-    public static void cycle(DrawContext drawContext, float v) {
-     //?} else {
-    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
-    *///? }
+    static Minecraft mc = Minecraft.getInstance();
+    public static void cycle(GuiGraphicsExtractor drawContext, float v) {
         if(isDisabled(name)) return;
-        if (!mc.getDebugHud().shouldShowDebugHud() && !mc.options.hudHidden) {
+        if (!mc.getDebugOverlay().showDebugScreen() && !mc.options.hideGui) {
             int rainbowInt = Utils.getRainbowInt();
             List<String> activeStates = Mod.getActiveStates();
             activeStates.sort(String::compareTo);
             if(!activeStates.isEmpty()) {
-                if (pastScaledWidth != mc.getWindow().getScaledWidth()) {
-                    pastScaledWidth = mc.getWindow().getScaledWidth();
+                if (pastScaledWidth != mc.getWindow().getGuiScaledWidth()) {
+                    pastScaledWidth = mc.getWindow().getGuiScaledWidth();
                     shouldUpdate = true;
                 }
                 if (shouldUpdate) {
@@ -51,22 +47,22 @@ public class ActiveMods extends Mod {
                     posY = 10;
                     int effectOffsetDown = 0;
                     String text = "Active mods:";
-                    longestLength = mc.textRenderer.getWidth(text);
+                    longestLength = mc.font.width(text);
 
                     for (int i = -1; i < activeStates.size(); i++) {
                         if (i == -1) {
-                            int newPositionX = mc.getWindow().getScaledWidth() - mc.textRenderer.getWidth(text) - 10;
-                            int newPositionY = mc.textRenderer.getWrappedLinesHeight(text, mc.textRenderer.getWidth(text));
+                            int newPositionX = mc.getWindow().getGuiScaledWidth() - mc.font.width(text) - 10;
+                            int newPositionY = mc.font.wordWrapHeight(FormattedText.of(text), mc.font.width(text));
                             texts.add(text);
                             textX.add(newPositionX);
                             textY.add(posY + effectOffsetDown);
                             posY += newPositionY;
                             posY += newPositionY / 2;
                         } else {
-                            int newPositionX = mc.getWindow().getScaledWidth() - mc.textRenderer.getWidth(activeStates.get(i)) - 10;
-                            int newPositionY = mc.textRenderer.getWrappedLinesHeight(activeStates.get(i), mc.textRenderer.getWidth(activeStates.get(i)));
-                            if (mc.textRenderer.getWidth(activeStates.get(i)) > longestLength)
-                                longestLength = mc.textRenderer.getWidth(activeStates.get(i));
+                            int newPositionX = mc.getWindow().getGuiScaledWidth() - mc.font.width(activeStates.get(i)) - 10;
+                            int newPositionY = mc.font.wordWrapHeight(FormattedText.of(activeStates.get(i)), mc.font.width(activeStates.get(i)));
+                            if (mc.font.width(activeStates.get(i)) > longestLength)
+                                longestLength = mc.font.width(activeStates.get(i));
                             texts.add(activeStates.get(i));
                             textX.add(newPositionX);
                             textY.add(posY + effectOffsetDown);
@@ -76,9 +72,9 @@ public class ActiveMods extends Mod {
 
                     shouldUpdate = false;
                 }
-                drawContext.fill(mc.getWindow().getScaledWidth() - longestLength - 15, 5, mc.getWindow().getScaledWidth() - 5, posY + 5, 0x80000000);
+                drawContext.fill(mc.getWindow().getGuiScaledWidth() - longestLength - 15, 5, mc.getWindow().getGuiScaledWidth() - 5, posY + 5, 0x80000000);
                 for (int i = 0; i < texts.size(); i++) {
-                    drawContext.drawText(mc.textRenderer, texts.get(i), textX.get(i), textY.get(i), rainbowInt, true);
+                    drawContext.text(mc.font, texts.get(i), textX.get(i), textY.get(i), rainbowInt, true);
                 }
             }
         }

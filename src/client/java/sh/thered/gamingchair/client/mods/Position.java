@@ -1,14 +1,13 @@
 package sh.thered.gamingchair.client.mods;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.util.math.MathHelper;
 import sh.thered.gamingchair.client.Mod;
+import sh.thered.gamingchair.client.ModConfig;
 import sh.thered.gamingchair.client.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Position extends Mod {
     static String name = "gc.position";
@@ -21,18 +20,10 @@ public class Position extends Mod {
     public String getDescription() { return description; }
 
     public static List<String> texts;
-    //? if <=1.21.11 {
-    static MinecraftClient mc = MinecraftClient.getInstance();
-    //? } else {
-    /*static Minecraft mc = Minecraft.getInstance();
-    *///? }
-    //? if <=1.21.11 {
-    public static void cycle(DrawContext drawContext, float v) {
-     //?} else {
-    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
-    *///? }
+    static Minecraft mc = Minecraft.getInstance();
+    public static void cycle(GuiGraphicsExtractor drawContext, float v) {
         if (isDisabled(name)) return;
-        if (!mc.getDebugHud().shouldShowDebugHud() && !mc.options.hudHidden) {
+        if (!mc.getDebugOverlay().showDebugScreen() && !mc.options.hideGui) {
             int posy = 10;
 
             if (Mod.isEnabled("gc.hud")) posy = 45;
@@ -41,14 +32,14 @@ public class Position extends Mod {
             activeStates.sort(String::compareTo);
 
             assert mc.player != null;
-            int le_x = mc.player.getBlockPos().getX();
-            int le_y = mc.player.getBlockPos().getY();
-            int le_z = mc.player.getBlockPos().getZ();
+            int le_x = mc.player.blockPosition().getX();
+            int le_y = mc.player.blockPosition().getY();
+            int le_z = mc.player.blockPosition().getZ();
             float yaw = Utils.getYaw();
             String direction_nswe = Utils.getDirectionNSWE();
             String direction_XZ = Utils.getDirectionXZ();
             String text = "X: " + le_x + " Y: " + le_y + " Z: " + le_z + " | " + direction_nswe + " " + direction_XZ + " " + yaw;
-            drawContext.drawText(mc.textRenderer, text, 10, posy, 0xffffffff, true);
+            drawContext.text(mc.font, text, 10, posy, 0xffffffff, true);
         }
     }
 }

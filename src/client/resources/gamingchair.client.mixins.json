@@ -1,14 +1,20 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "sh.thered.gamingchair.mixin.client",
+  "package": "sh.thered.gamingchair.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "TiledBlitRenderStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "mixins": [
+    "GlyphRenderStateMixin",
+    "GuiRendererMixin",
+    "TranslatableContentsMixin"
+  ]
 }
