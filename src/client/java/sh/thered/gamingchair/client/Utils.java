@@ -1,25 +1,16 @@
 package sh.thered.gamingchair.client;
 
-//? if <=1.21.11 {
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.MathHelper;
-//? } else {
-/*import net.minecraft.client.Minecraft;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
-*///? }
 
 public class Utils {
-    //? if <=1.21.11 {
-    static MinecraftClient mc = MinecraftClient.getInstance();
-    //? } else {
-    /*static Minecraft mc = Minecraft.getInstance();
-    *///? }
+    static Minecraft mc = Minecraft.getInstance();
     public static float getYaw() {
         assert mc.player != null;
-        float yaw_bonk = ((mc.player.getYaw() + 180) % 360) - 180;
+        float yaw_bonk = ((mc.player.getYRot() + 180) % 360) - 180;
         float yaw = yaw_bonk;
         if (yaw_bonk < -180) {
-            yaw = ((mc.player.getYaw() + 180) % 360) + 180;
+            yaw = ((mc.player.getYRot() + 180) % 360) + 180;
         }
         return yaw;
     }
@@ -53,9 +44,9 @@ public class Utils {
     }
     public static int getRainbowInt() {
         float x = System.currentTimeMillis() % 2000 / 1000F;
-        float red = 0.5F + 0.5F * MathHelper.sin(x * (float) Math.PI);
-        float green = 0.5F + 0.5F * MathHelper.sin((x + 4F / 3F) * (float) Math.PI);
-        float blue = 0.5F + 0.5F * MathHelper.sin((x + 8F / 3F) * (float) Math.PI);
+        float red = 0.5F + 0.5F * Mth.sin(x * (float) Math.PI);
+        float green = 0.5F + 0.5F * Mth.sin((x + 4F / 3F) * (float) Math.PI);
+        float blue = 0.5F + 0.5F * Mth.sin((x + 8F / 3F) * (float) Math.PI);
         return 0x04 << 16 |
                 0xFF << 24 |
                 (int) Math.min(red*255+50, 255) << 16 |

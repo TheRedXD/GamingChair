@@ -42,10 +42,18 @@ public class ModConfig {
         return options.get(modName).get(option);
     }
 
+    public static Object getOptionAssertive(String modName, String option) {
+        return options.get(modName).get(option);
+    }
+
     @Nullable
     public static Map<String, Object> getOptions(String modName) {
         if(!options.containsKey(modName)) return null;
         return options.get(modName);
+    }
+
+    public static boolean hasOptions(String modName) {
+        return options.containsKey(modName) && !options.get(modName).isEmpty();
     }
 
     public static void dropOptions(String modName) {

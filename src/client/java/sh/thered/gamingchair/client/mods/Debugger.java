@@ -1,7 +1,7 @@
 package sh.thered.gamingchair.client.mods;
 
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.FormattedText;
 import sh.thered.gamingchair.client.debug.DebugInfo;
 import sh.thered.gamingchair.client.Mod;
 
@@ -22,11 +22,7 @@ public class Debugger extends Mod {
 
     static Map<String, Collection<DebugInfo>> debugInfoCollections = new HashMap<>();
 
-    //? if <=1.21.11 {
-    public static void render(DrawContext drawContext, float v) {
-     //?} else {
-    /*public static void render(GuiGraphicsExtractor drawContext, float v) {
-    *///? }
+    public static void render(GuiGraphicsExtractor drawContext, float v) {
         if(isDisabled(name)) return;
         int padding = 3;
         int x = 10;
@@ -37,8 +33,8 @@ public class Debugger extends Mod {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (debugInfoPriority.get(key) == i) {
-                    drawContext.drawText(Hud.mc.textRenderer, key + ": " + value, x, y, 0xFFFFFFFF, false);
-                    y += Hud.mc.textRenderer.getWrappedLinesHeight(key + ": " + value, Hud.mc.textRenderer.getWidth(key + ": " + value)) + padding;
+                    drawContext.text(Hud.mc.font, key + ": " + value, x, y, 0xFFFFFFFF, false);
+                    y += Hud.mc.font.wordWrapHeight(FormattedText.of(key + ": " + value), Hud.mc.font.width(key + ": " + value)) + padding;
                 }
             }
         }
@@ -81,13 +77,9 @@ public class Debugger extends Mod {
         debugInfoPriority.remove(key);
     }
 
-    //? if <=1.21.11 {
-    public static void cycle(DrawContext drawContext, float v) {
-     //?} else {
-    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
-    *///? }
+    public static void cycle(GuiGraphicsExtractor drawContext, float v) {
         if(isDisabled(name)) return;
-        if (!Hud.mc.getDebugHud().shouldShowDebugHud() && !Hud.mc.options.hudHidden) {
+        if (!Hud.mc.getDebugOverlay().showDebugScreen() && !Hud.mc.options.hideGui) {
             render(drawContext, v);
         }
     }

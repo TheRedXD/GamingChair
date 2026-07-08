@@ -1,6 +1,7 @@
 package sh.thered.gamingchair.client.mods;
 
 import sh.thered.gamingchair.client.Mod;
+import sh.thered.gamingchair.client.ModConfig;
 
 import java.util.*;
 import java.util.regex.*;
@@ -15,6 +16,14 @@ public class Uwuifier extends Mod {
     @Override
     public String getDescription() { return description; }
 
+    @Override
+    public void init() {
+        ModConfig.setOption(getName(), "force_sfw_actions", false);
+        ModConfig.setOption(getName(), "actions", true);
+        ModConfig.setOption(getName(), "faces", true);
+        ModConfig.setOption(getName(), "exclamations", true);
+    }
+
     private static final String[] FACES = {
             "(・`ω´・)", ";;w;;", "OwO", "UwU", ">w<", "^w^", "ÚwÚ", "^-^", ":3", "x3"
     };
@@ -25,6 +34,11 @@ public class Uwuifier extends Mod {
             "*blushes*","*whispers to self*","*cries*","*screams*","*sweats*",
             "*twerks*","*runs away*","*screeches*","*walks away*","*sees bulge*",
             "*looks at you*","*notices buldge*","*starts twerking*","*huggles tightly*","*boops your nose*"
+    };
+    private static final String[] SFW_ACTIONS = {
+            "*blushes*","*whispers to self*","*cries*","*screams*","*sweats*",
+            "*runs away*","*screeches*","*walks away*",
+            "*looks at you*","*huggles tightly*","*boops your nose*"
     };
     private static final List<PatternReplacement> UWU_MAP = Arrays.asList(
             new PatternReplacement(Pattern.compile("(?:r|l)", Pattern.UNICODE_CASE), "w"),
@@ -67,7 +81,7 @@ public class Uwuifier extends Mod {
         if (input == null) return null;
         String s = input;
         s = uwuifyWords(s);
-        s = uwuifyExclamations(s);
+        if ((Boolean) ModConfig.getOptionAssertive(name, "exclamations")) s = uwuifyExclamations(s);
         s = uwuifySpaces(s);
         return s;
     }
@@ -109,9 +123,15 @@ public class Uwuifier extends Mod {
             String word = parts[i];
             double r = random.nextDouble();
             if (r < spacesFacesModifier) {
-                word += " " + FACES[random.nextInt(FACES.length)];
+                if ((Boolean) ModConfig.getOptionAssertive(name, "faces")) word += " " + FACES[random.nextInt(FACES.length)];
             } else if (r < spacesFacesModifier + spacesActionsModifier) {
-                word += " " + ACTIONS[random.nextInt(ACTIONS.length)];
+                if ((Boolean) ModConfig.getOptionAssertive(name, "actions")) {
+                    if ((Boolean) ModConfig.getOptionAssertive(name, "force_sfw_actions")) {
+                        word += " " + SFW_ACTIONS[random.nextInt(SFW_ACTIONS.length)];
+                    } else {
+                        word += " " + ACTIONS[random.nextInt(ACTIONS.length)];
+                    }
+                }
             } else if (r < spacesFacesModifier + spacesActionsModifier + spacesStuttersModifier) {
                 if (word.length() > 0 && Character.isLetter(word.charAt(0))) {
                     char first = word.charAt(0);

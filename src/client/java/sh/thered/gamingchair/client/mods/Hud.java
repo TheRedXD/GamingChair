@@ -1,12 +1,8 @@
 package sh.thered.gamingchair.client.mods;
 import net.fabricmc.loader.api.FabricLoader;
-//? if <=1.21.11 {
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
- //? } else {
-/*import net.minecraft.client.Minecraft;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-*///? }
+import net.minecraft.network.chat.FormattedText;
 import sh.thered.gamingchair.client.Mod;
 import sh.thered.gamingchair.client.Utils;
 
@@ -24,19 +20,11 @@ public class Hud extends Mod {
     public String getDescription() { return description; }
 
     public List<String> texts = new ArrayList<String>();
-    //? if <=1.21.11 {
-    static MinecraftClient mc = MinecraftClient.getInstance();
-     //? } else {
-    /*static Minecraft mc = Minecraft.getInstance();
-    *///? }
-    //? if <=1.21.11 {
-    public static void cycle(DrawContext drawContext, float v) {
-    //?} else {
-    /*public static void cycle(GuiGraphicsExtractor drawContext, float v) {
-    *///? }
+    static Minecraft mc = Minecraft.getInstance();
+    public static void cycle(GuiGraphicsExtractor drawContext, float v) {
         if(isDisabled(name)) return;
         // MinecraftClient.getInstance().currentScreen very useful when it comes to detecting if a screen is shown (loading screen and chat, etc.)
-        if (!mc.getDebugHud().shouldShowDebugHud() && !mc.options.hudHidden) {
+        if (!mc.getDebugOverlay().showDebugScreen() && !mc.options.hideGui) {
 
             String gamingChairVersion = String.valueOf(FabricLoader.getInstance().getModContainer("gamingchair").orElseThrow().getMetadata().getVersion());
 
@@ -51,16 +39,16 @@ public class Hud extends Mod {
             int posx = 10;
             int posy = 10;
 
-            drawContext.fill(posx - padding, posy - padding, mc.textRenderer.getWidth(text3+text6) + 30 + posx + padding - 1, mc.textRenderer.getWrappedLinesHeight(text1, mc.textRenderer.getWidth(text3+text6)) * 3 + posy + padding - 2, 0x80000000);
+            drawContext.fill(posx - padding, posy - padding, mc.font.width(text3+text6) + 30 + posx + padding - 1, mc.font.wordWrapHeight(FormattedText.of(text1), mc.font.width(text3+text6)) * 3 + posy + padding - 2, 0x80000000);
 
             int rainbowInt = Utils.getRainbowInt();
 
-            drawContext.drawText(mc.textRenderer, text1, posx, posy, rainbowInt, false);
-            drawContext.drawText(mc.textRenderer, text2, posx, posy+mc.textRenderer.getWrappedLinesHeight(text2, mc.textRenderer.getWidth(text2)), rainbowInt, false);
-            drawContext.drawText(mc.textRenderer, text3, posx, posy+mc.textRenderer.getWrappedLinesHeight(text3, mc.textRenderer.getWidth(text3))*2, rainbowInt, false);
-            drawContext.drawText(mc.textRenderer, text4, posx+30, posy, rainbowInt, false);
-            drawContext.drawText(mc.textRenderer, text5, posx+30, posy+mc.textRenderer.getWrappedLinesHeight(text2, mc.textRenderer.getWidth(text2)), rainbowInt, false);
-            drawContext.drawText(mc.textRenderer, text6, posx+30, posy+mc.textRenderer.getWrappedLinesHeight(text3, mc.textRenderer.getWidth(text3))*2, rainbowInt, false);
+            drawContext.text(mc.font, text1, posx, posy, rainbowInt, false);
+            drawContext.text(mc.font, text2, posx, posy+mc.font.wordWrapHeight(FormattedText.of(text2), mc.font.width(text2)), rainbowInt, false);
+            drawContext.text(mc.font, text3, posx, posy+mc.font.wordWrapHeight(FormattedText.of(text3), mc.font.width(text3))*2, rainbowInt, false);
+            drawContext.text(mc.font, text4, posx+30, posy, rainbowInt, false);
+            drawContext.text(mc.font, text5, posx+30, posy+mc.font.wordWrapHeight(FormattedText.of(text2), mc.font.width(text2)), rainbowInt, false);
+            drawContext.text(mc.font, text6, posx+30, posy+mc.font.wordWrapHeight(FormattedText.of(text3), mc.font.width(text3))*2, rainbowInt, false);
 
         }
     }

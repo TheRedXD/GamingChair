@@ -84,6 +84,8 @@ public class Mod {
         configs.remove(modName);
     }
 
+    public void init() {}
+
     public String getName() {
         return "";
     }
@@ -98,6 +100,7 @@ public class Mod {
                 states.put(mod.getName(), modConfig.getState());
                 configs.put(mod.getName(), modConfig);
                 mods.put(mod.getName(), mod);
+                mod.init();
             });
         });
         ActiveMods.update();

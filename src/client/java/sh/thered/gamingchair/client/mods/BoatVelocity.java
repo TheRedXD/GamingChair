@@ -1,17 +1,19 @@
 package sh.thered.gamingchair.client.mods;
 
-//? if 1.21.10 {
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-//?}
-//? if <=1.21.11 {
-import net.minecraft.client.MinecraftClient;
- //? } else {
-/*import net.minecraft.client.Minecraft;
-*///? }
-//import net.minecraft.client.render.WorldRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import sh.thered.gamingchair.client.Mod;
+import sh.thered.gamingchair.client.Utils;
 import sh.thered.gamingchair.client.debug.DebugInfo;
 import sh.thered.gamingchair.client.debug.DebugInfoCollectionBuilder;
+import sh.thered.gamingchair.client.mods.Debugger;
 
 import java.util.Collection;
 
@@ -25,38 +27,38 @@ public class BoatVelocity extends Mod {
     @Override
     public String getDescription() { return description; }
 
-    //? if <=1.21.11 {
-    static MinecraftClient mc = MinecraftClient.getInstance();
-     //? } else {
-    /*static Minecraft mc = Minecraft.getInstance();
-    *///? }
+    static Minecraft mc = Minecraft.getInstance();
 
-    //? if 1.21.10 {
-    public static void cycle(WorldRenderContext worldRenderContext) {
+    public static void cycle(PoseStack poseStack) {
         if(isDisabled(name)) {
             Debugger.removeDebugInfoCollection("boatvelocity");
             return;
         }
 
-        if(mc.player == null || mc.world == null || mc.player.getVehicle() == null || mc.player.getVehicle().getControllingPassenger() != mc.player) {
+        if(mc.player == null || mc.level == null || mc.player.getVehicle() == null || mc.player.getVehicle().getControllingPassenger() != mc.player) {
             Debugger.removeDebugInfoCollection("boatvelocity");
             return;
         }
 
-        // Render a line towards where the boat has the most velocity
+        boolean USE_RAINBOW = true;
+        int colorHex = USE_RAINBOW ? Utils.getRainbowInt() : 0xFF0000;
+        float r = ((colorHex >> 16) & 0xFF) / 255.0f;
+        float g = ((colorHex >> 8) & 0xFF) / 255.0f;
+        float b = (colorHex & 0xFF) / 255.0f;
+        float alpha = 1.0f;
 
-        // Get velocity
-        double velocityX = mc.player.getVehicle().getVelocity().getX();
-        double velocityY = mc.player.getVehicle().getVelocity().getY();
-        double velocityZ = mc.player.getVehicle().getVelocity().getZ();
+        Vec3 velocity = mc.player.getVehicle().getDeltaMovement();
+        double velocityX = velocity.x;
+        double velocityY = velocity.y;
+        double velocityZ = velocity.z;
 
-        // Normalize velocity
         double velocityMagnitude = Math.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
-        velocityX /= velocityMagnitude;
-        velocityY /= velocityMagnitude;
-        velocityZ /= velocityMagnitude;
+        if (velocityMagnitude > 0) {
+            velocityX /= velocityMagnitude;
+            velocityY /= velocityMagnitude;
+            velocityZ /= velocityMagnitude;
+        }
 
-        // Make sure to fix any NaNs
         if(Double.isNaN(velocityX)) velocityX = 0;
         if(Double.isNaN(velocityY)) velocityY = 0;
         if(Double.isNaN(velocityZ)) velocityZ = 0;
@@ -64,23 +66,48 @@ public class BoatVelocity extends Mod {
         Debugger.removeDebugInfoCollection("boatvelocity");
 
         Collection<DebugInfo> debugInfoCollection = new DebugInfoCollectionBuilder("boatvelocity")
-            .add("velocityX", String.valueOf(velocityX), 0)
-            .add("velocityY", String.valueOf(velocityY), 1)
-            .add("velocityZ", String.valueOf(velocityZ), 2)
-            .build();
+                .add("velocityX", String.valueOf(velocityX), 0)
+                .add("velocityY", String.valueOf(velocityY), 1)
+                .add("velocityZ", String.valueOf(velocityZ), 2)
+                .build();
 
         Debugger.appendDebugInfoCollection("boatvelocity", debugInfoCollection);
 
-        // Render line
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 cameraPos = camera.position();
 
-//        WorldRenderer worldRenderer = worldRenderContext.worldRenderer();
-    }
-    //?}
+        float tickDelta = mc.getDeltaTracker().getGameTimeDeltaTicks();
 
-    public static void cycle() {
-        if(isDisabled(name)) {
-            Debugger.removeDebugInfoCollection("boatvelocity");
-            return;
-        }
+        double boatSmoothX = Mth.lerp(tickDelta, mc.player.getVehicle().xOld, mc.player.getVehicle().getX());
+        double boatSmoothY = Mth.lerp(tickDelta, mc.player.getVehicle().yOld, mc.player.getVehicle().getY());
+        double boatSmoothZ = Mth.lerp(tickDelta, mc.player.getVehicle().zOld, mc.player.getVehicle().getZ());
+
+        double startX = boatSmoothX - cameraPos.x;
+        double startY = (boatSmoothY + 0.5) - cameraPos.y;
+        double startZ = boatSmoothZ - cameraPos.z;
+
+        double endX = startX + (velocityX * 2.0);
+        double endY = startY + (velocityY * 2.0);
+        double endZ = startZ + (velocityZ * 2.0);
+
+        poseStack.pushPose();
+        Matrix4f positionMatrix = poseStack.last().pose();
+
+        MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+        VertexConsumer buffer = bufferSource.getBuffer(RenderTypes.lines());
+
+        buffer.addVertex(positionMatrix, (float) startX, (float) startY, (float) startZ)
+                .setColor(r, g, b, alpha)
+                .setNormal((float) velocityX, (float) velocityY, (float) velocityZ)
+                .setLineWidth(3.0F);
+
+        buffer.addVertex(positionMatrix, (float) endX, (float) endY, (float) endZ)
+                .setColor(r, g, b, alpha)
+                .setNormal((float) velocityX, (float) velocityY, (float) velocityZ)
+                .setLineWidth(3.0F);
+
+        bufferSource.endBatch(RenderTypes.lines());
+
+        poseStack.popPose();
     }
 }
